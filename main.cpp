@@ -24,8 +24,10 @@ template<typename T>
 Kucha<T>::Kucha(std::vector<T> a, bool need_sort) {
     src = a;
     size = a.size();
-    for(int i = size-1; i >= 0 && need_sort; i++)
+    for(int i = size-1; i >= 0 && need_sort; i--)
         sift_down(i);
+        //for(int i = 0; i < size && need_sort; i++)
+        //sift_up(i);
 }
 
 template<typename T>
@@ -36,7 +38,7 @@ Kucha<T>::Kucha() {
 template<typename T>
 int Kucha<T>::sift_up(int i) {
     int prev = (i-1)/2, now = i;
-    while(now != 0 && src[now] > src[prev])
+    while(now && src[now] > src[prev])
     {
         std::swap(src[now], src[prev]);
         now = prev;
@@ -86,7 +88,6 @@ template<typename T>
 int Kucha<T>::delete_(int i) {
     int ans = src[i];
     std::swap(src[i], src[size - 1]);
-    src.pop_back();
     size--;
     if(size > 1 && i < size) {
         sift_up(sift_down(i));
@@ -110,7 +111,7 @@ template<typename T>
 void Kucha<T>::extract_max() {
     std::swap(src[0], src[size-1]);
     size--;
-    src.pop_back();
+    if(size > 1) sift_down(0);
 }
 
 template<typename T>
@@ -121,52 +122,21 @@ int Kucha<T>::push(int x) {
 }
 
 int main() {
-    Kucha<int> kucha;
-    int n, m, request, data;
-    std::cin >> n >> m;
-    for(int i = 0; i < m; i++)
+    int n;
+    std::cin >> n;
+    std::vector<int> a(n);
+    for(int i = 0; i < n; ++i)
     {
-        std::cin >> request;
-        if(request == 1)
-        {
-            if(kucha.size == 0)
-                std::cout << -1;
-            else
-            {
-                int e = kucha.src[0];
-                if(kucha.size != 1) {
-                    kucha.extract_max();
-                    std::cout << kucha.sift_down(0) + 1 << " ";
-                }
-                else
-                {
-                    kucha.src.pop_back();
-                    kucha.size = 0;
-                    std::cout << 0 << " ";
-                }
-                std::cout << e;
-            }
-        }
-        else if(request == 2)
-        {
-            std::cin >> data;
-            if(kucha.size == n)
-                std::cout << -1;
-            else
-                std::cout << kucha.push(data)+1;
-        }
-        else  if(request == 3)
-        {
-            std::cin >> data;
-            if(kucha.size < data)
-                std::cout << -1;
-            else
-                std::cout << kucha.delete_(data-1);
-        }
-        std::cout << std::endl;
+        std::cin >> a[i];
     }
-    for(int i = 0; i < kucha.size; i++)
+    Kucha<int> kucha(a, true);
+    for(int j = 0; j < n; ++j)
+    {
+        kucha.extract_max();
+    }
+    for(int i = 0; i < n; ++i)
+    {
         std::cout << kucha.src[i] << " ";
-
+    }
     return 0;
 }
